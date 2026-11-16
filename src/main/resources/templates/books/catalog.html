@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Catalogue')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container">
+    <div class="page-heading">
+        <div>
+            <p class="eyebrow">The collection</p>
+            <h1>Find your next read.</h1>
+            <p class="subtitle">Search by title or author, or filter by category. Loans last <span th:text="${loanDays}">14</span> days;
+        late returns cost <span th:text="${currency} + ${finePerDay}">5</span> per day.</p>
+        </div>
+        <a class="btn btn-outline" th:href="@{/my/loans}">My library <span aria-hidden="true">↗</span></a>
+    </div>
+
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <form class="search-bar" th:action="@{/books}" method="get">
+        <input type="text" name="q" th:value="${q}" placeholder="Search by title or author">
+        <select name="category">
+            <option value="">All categories</option>
+            <option th:each="c : ${categories}" th:value="${c}" th:text="${c}"
+                    th:selected="${c == selectedCategory}"></option>
+        </select>
+        <button type="submit" class="btn">Search</button>
+        <a class="btn btn-outline" th:href="@{/books}">Clear</a>
+    </form>
+
+    <div class="book-grid">
+        <article class="book-card" th:each="b : ${books}">
+            <div class="book-cover-frame">
+                <img class="book-cover" th:src="'https://covers.openlibrary.org/b/isbn/' + ${b.isbn} + '-L.jpg'"
+                     th:alt="'Cover of ' + ${b.title}" loading="lazy">
+            </div>
+            <div class="book-card-content">
+                <span class="book-category" th:text="${b.category}">Category</span>
+                <h2 class="book-title" th:text="${b.title}">Title</h2>
+                <p class="book-author" th:text="${b.author}">Author</p>
+                <div class="book-meta">
+                    <span class="availability"><span th:text="${b.availableQuantity} + ' of ' + ${b.totalQuantity}">1 of 2</span> available</span>
+                    <span th:if="${b.availableQuantity > 0}" class="badge badge-green">Available</span>
+                    <span th:if="${b.availableQuantity == 0}" class="badge badge-amber">On loan</span>
+                </div>
+                <div class="book-actions">
+                    <span th:if="${issuedBookIds.contains(b.id)}" class="badge badge-gray">You have this</span>
+                    <th:block th:unless="${issuedBookIds.contains(b.id)}">
+                        <form th:if="${b.availableQuantity > 0}" th:action="@{/books/{id}/issue(id=${b.id})}" method="post">
+                            <button type="submit" class="btn btn-sm">Borrow this book</button>
+                        </form>
+                        <th:block th:if="${b.availableQuantity == 0}">
+                            <span th:if="${reservedBookIds.contains(b.id)}" class="badge badge-amber">Reserved by you</span>
+                            <form th:unless="${reservedBookIds.contains(b.id)}" th:action="@{/books/{id}/reserve(id=${b.id})}" method="post">
+                                <button type="submit" class="btn btn-sm btn-outline">Reserve a copy</button>
+                            </form>
+                        </th:block>
+                    </th:block>
+                </div>
+            </div>
+        </article>
+        <div class="empty-state" th:if="${#lists.isEmpty(books)}">No books match your search. Try another title, author, or category.</div>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

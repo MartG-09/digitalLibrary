@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' | Digital Library'">Digital Library</title>
+    <meta name="theme-color" content="#f6f3ed">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <script th:src="@{/js/library-ui.js}" defer></script>
+</head>
+<body>
+
+<nav class="navbar" th:fragment="navbar" aria-label="Main navigation">
+    <a class="brand" th:href="@{/}" aria-label="The Reading Room home"><span class="brand-mark" aria-hidden="true">R</span><span>The Reading Room<small>Digital Library</small></span></a>
+    <div class="nav-links">
+        <th:block sec:authorize="hasRole('USER')">
+            <a th:href="@{/books}">Discover</a>
+            <a th:href="@{/my/loans}">My library</a>
+            <a th:href="@{/my/reservations}">Reservations</a>
+            <a th:href="@{/contact}">Contact</a>
+        </th:block>
+        <th:block sec:authorize="!isAuthenticated()">
+            <a th:href="@{/login}">Sign in</a>
+            <a class="nav-join" th:href="@{/register}">Join the library <span aria-hidden="true">↗</span></a>
+        </th:block>
+        <form sec:authorize="isAuthenticated()" class="inline" th:action="@{/logout}" method="post">
+            <button type="submit" class="link-btn">Sign out</button>
+        </form>
+    </div>
+</nav>
+
+<aside class="admin-sidebar" th:fragment="adminSidebar(active)">
+    <a class="admin-brand" th:href="@{/admin}"><span class="brand-mark" aria-hidden="true">R</span><span>Reading Room<small>LIBRARY CONSOLE</small></span></a>
+    <p class="sidebar-label">WORKSPACE</p>
+    <nav class="sidebar-links" aria-label="Administrator navigation">
+        <a th:href="@{/admin}" th:classappend="${active == 'dashboard'} ? ' is-active'"><span class="nav-mark" aria-hidden="true">⌂</span>Overview</a>
+        <a th:href="@{/admin/books}" th:classappend="${active == 'books'} ? ' is-active'"><span class="nav-mark" aria-hidden="true">▤</span>Book collection</a>
+        <a th:href="@{/admin/members}" th:classappend="${active == 'members'} ? ' is-active'"><span class="nav-mark" aria-hidden="true">♙</span>Members</a>
+        <a th:href="@{/admin/loans}" th:classappend="${active == 'loans'} ? ' is-active'"><span class="nav-mark" aria-hidden="true">↗</span>Loans</a>
+        <a th:href="@{/admin/fines}" th:classappend="${active == 'fines'} ? ' is-active'"><span class="nav-mark" aria-hidden="true">＄</span>Fines</a>
+        <a th:href="@{/admin/messages}" th:classappend="${active == 'messages'} ? ' is-active'"><span class="nav-mark" aria-hidden="true">✉</span>Messages</a>
+    </nav>
+    <div class="sidebar-bottom">
+        <a th:href="@{/}">← View member site</a>
+        <form class="inline" th:action="@{/logout}" method="post"><button type="submit" class="sidebar-signout">Sign out <span aria-hidden="true">↗</span></button></form>
+    </div>
+</aside>
+
+<header class="admin-topbar" th:fragment="adminTopbar">
+    <div class="admin-topbar-title"><span class="eyebrow">LIBRARY OPERATIONS</span><strong>Administration</strong></div>
+    <div class="admin-topbar-actions">
+        <a class="admin-site-link" th:href="@{/}">Member site <span aria-hidden="true">↗</span></a>
+        <span class="admin-profile"><span class="profile-dot" aria-hidden="true">A</span><span>Administrator</span></span>
+    </div>
+</header>
+
+<div class="flash-stack" th:fragment="flash">
+    <div class="alert alert-success" role="status" th:if="${success}" th:text="${success}"></div>
+    <div class="alert alert-error" role="alert" th:if="${error}" th:text="${error}"></div>
+</div>
+
+<footer class="site-footer" th:fragment="footer">
+    <a class="footer-brand" th:href="@{/}">The Reading Room</a>
+    <span>A little more room for the stories you love.</span>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Messages')}"></head>
+<body class="admin-body">
+<aside th:replace="~{fragments/layout :: adminSidebar('messages')}"></aside>
+<div class="admin-shell">
+<header th:replace="~{fragments/layout :: adminTopbar}"></header>
+<main class="admin-content">
+    <h1>Member messages</h1>
+    <p class="subtitle">Questions sent through the contact form, newest first.</p>
+
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="msg" th:each="m : ${messages}">
+        <div class="msg-head">
+            <div>
+                <strong th:text="${m.subject}">Subject</strong>
+                <span th:if="${m.resolved}" class="badge badge-green">Resolved</span>
+                <span th:unless="${m.resolved}" class="badge badge-amber">Open</span>
+                <div class="muted">
+                    From <span th:text="${m.name}">Name</span>
+                    (<a th:href="'mailto:' + ${m.email}" th:text="${m.email}">email</a>)
+                    &middot; <span th:text="${#temporals.format(m.createdAt, 'dd MMM yyyy HH:mm')}">date</span>
+                </div>
+            </div>
+            <form th:unless="${m.resolved}" class="inline"
+                  th:action="@{/admin/messages/{id}/resolve(id=${m.id})}" method="post">
+                <button type="submit" class="btn btn-sm btn-success">Mark resolved</button>
+            </form>
+        </div>
+        <p class="msg-body" th:text="${m.message}">Message</p>
+    </div>
+    <div class="card empty" th:if="${#lists.isEmpty(messages)}">No messages yet.</div>
+</main>
+</div>
+</body>
+</html>

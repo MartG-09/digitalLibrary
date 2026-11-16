@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Welcome')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container home-page">
+    <section class="card hero" aria-labelledby="home-title">
+        <div class="hero-content">
+            <p class="eyebrow">A quieter place to find your next read</p>
+            <h1 id="home-title">Stories worth making time for.</h1>
+            <p class="subtitle">Discover a thoughtful collection, borrow at your own pace, and keep every chapter of your reading life together.</p>
+            <form class="hero-search" th:action="@{/books}" method="get" role="search">
+                <input type="text" name="q" placeholder="Search titles and authors" aria-label="Search titles and authors">
+                <button type="submit" class="btn">Explore the catalogue <span aria-hidden="true">↗</span></button>
+            </form>
+            <div class="actions">
+                <a class="btn btn-outline" th:href="@{/register}">Create your free account</a>
+                <a th:href="@{/login}">Already a member? Sign in</a>
+            </div>
+            <p class="home-note">A welcoming collection. A little more room for the stories you love.</p>
+        </div>
+    </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

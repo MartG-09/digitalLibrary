@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Manage Books')}"></head>
+<body class="admin-body">
+<aside th:replace="~{fragments/layout :: adminSidebar('books')}"></aside>
+<div class="admin-shell">
+<header th:replace="~{fragments/layout :: adminTopbar}"></header>
+<main class="admin-content">
+    <div class="row-between">
+        <div>
+            <h1>Manage books</h1>
+            <p class="subtitle">Add, edit or remove books from the catalogue.</p>
+        </div>
+        <a class="btn" th:href="@{/admin/books/new}">+ Add new book</a>
+    </div>
+
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <input class="filter-control" type="search" placeholder="Search titles, authors, ISBNs…" aria-label="Search books" data-table-filter="#admin-books-table">
+
+    <div class="table-wrap">
+    <table id="admin-books-table">
+        <thead>
+        <tr><th>Title</th><th>Author</th><th>ISBN</th><th>Category</th><th>Available / Total</th><th></th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="b : ${books}">
+            <td><strong th:text="${b.title}">Title</strong></td>
+            <td th:text="${b.author}">Author</td>
+            <td th:text="${b.isbn}">ISBN</td>
+            <td><span class="badge badge-blue" th:text="${b.category}">Category</span></td>
+            <td th:text="${b.availableQuantity} + ' / ' + ${b.totalQuantity}">1 / 2</td>
+            <td>
+                <div class="actions-cell">
+                    <a class="btn btn-sm btn-outline" th:href="@{/admin/books/{id}/edit(id=${b.id})}">Edit</a>
+                    <form class="inline" th:action="@{/admin/books/{id}/delete(id=${b.id})}" method="post"
+                          onsubmit="return confirm('Delete this book?');">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(books)}"><td colspan="6" class="empty">No books yet. Add the first one.</td></tr>
+        </tbody>
+    </table>
+    </div>
+</main>
+</div>
+</body>
+</html>

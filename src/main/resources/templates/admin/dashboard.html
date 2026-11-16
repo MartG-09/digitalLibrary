@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Admin Dashboard')}"></head>
+<body class="admin-body">
+<aside th:replace="~{fragments/layout :: adminSidebar('dashboard')}"></aside>
+<div class="admin-shell">
+<header th:replace="~{fragments/layout :: adminTopbar}"></header>
+<main class="admin-content">
+    <p class="eyebrow">Overview</p>
+    <h1>Library at a glance</h1>
+    <p class="subtitle">A clear view of today’s collection, circulation, and member activity.</p>
+
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="stats dashboard-stats">
+        <a class="stat" th:href="@{/admin/books}"><span class="stat-icon" aria-hidden="true">▤</span><div class="num" th:text="${totalTitles}">0</div><div class="lbl">Book titles</div></a>
+        <a class="stat" th:href="@{/admin/members}"><span class="stat-icon" aria-hidden="true">♙</span><div class="num" th:text="${totalMembers}">0</div><div class="lbl">Registered members</div></a>
+        <a class="stat" th:href="@{/admin/loans}"><span class="stat-icon" aria-hidden="true">↗</span><div class="num" th:text="${issuedNow}">0</div><div class="lbl">Active loans</div></a>
+        <a class="stat danger" th:href="@{/admin/loans}"><span class="stat-icon" aria-hidden="true">!</span><div class="num" th:text="${overdueNow}">0</div><div class="lbl">Overdue loans</div></a>
+        <a class="stat danger" th:href="@{/admin/fines}"><span class="stat-icon" aria-hidden="true">＄</span><div class="num" th:text="${currency} + ${unpaidFines}">0</div><div class="lbl">Outstanding fines</div></a>
+        <a class="stat" th:href="@{/admin/fines}"><span class="stat-icon" aria-hidden="true">✓</span><div class="num" th:text="${currency} + ${collectedFines}">0</div><div class="lbl">Fines collected</div></a>
+        <a class="stat" th:href="@{/admin/messages}"><span class="stat-icon" aria-hidden="true">✉</span><div class="num" th:text="${openMessages}">0</div><div class="lbl">Open messages</div></a>
+    </div>
+    <section class="dashboard-shortcuts">
+        <div><p class="eyebrow">Quick access</p><h2>Manage your library</h2></div>
+        <div class="actions-cell">
+            <a class="btn btn-outline" th:href="@{/admin/books}">Book collection</a>
+            <a class="btn btn-outline" th:href="@{/admin/members}">Members</a>
+            <a class="btn btn-outline" th:href="@{/admin/loans}">Loans</a>
+            <a class="btn btn-outline" th:href="@{/admin/fines}">Fines</a>
+        </div>
+    </section>
+</main>
+</div>
+</body>
+</html>

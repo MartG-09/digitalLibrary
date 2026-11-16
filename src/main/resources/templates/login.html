@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Login')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="auth-layout">
+    <aside class="auth-aside">
+        <p class="eyebrow">The Reading Room · Digital Library</p>
+        <div>
+            <h1>Good stories bring us back.</h1>
+            <p>Your shelves, loans, and saved reservations—all in one calm place.</p>
+        </div>
+        <p class="auth-aside-note">Make time for the books that stay with you.</p>
+    </aside>
+    <section class="auth-main">
+        <div class="auth-card">
+            <p class="eyebrow">Welcome back</p>
+            <h2>Sign in</h2>
+            <p class="subtitle">Members and librarians can access their library here.</p>
+
+            <div th:replace="~{fragments/layout :: flash}"></div>
+            <div class="alert alert-error" role="alert" th:if="${param.error}">Wrong email or password, or your account is disabled.</div>
+            <div class="alert alert-success" role="status" th:if="${param.logout}">You have been logged out.</div>
+
+            <form th:action="@{/login}" method="post">
+                <label for="username">Email address</label>
+                <input type="email" id="username" name="username" autocomplete="username" required autofocus>
+                <label for="password">Password</label>
+                <div class="password-wrap">
+                    <input type="password" id="password" name="password" autocomplete="current-password" required>
+                    <button class="password-toggle" type="button" data-password-toggle="password" aria-controls="password" aria-pressed="false">Show</button>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn">Sign in</button>
+                    <a class="btn btn-outline" th:href="@{/register}">Create an account</a>
+                </div>
+            </form>
+        </div>
+    </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Error')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container narrow">
+    <div class="card">
+        <h1>Something went wrong</h1>
+        <p class="subtitle">The page you asked for is not available, or you are not allowed to open it.</p>
+        <a class="btn" th:href="@{/}">Back to home</a>
+    </div>
+</main>
+</body>
+</html>

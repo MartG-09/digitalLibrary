@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Fines')}"></head>
+<body class="admin-body">
+<aside th:replace="~{fragments/layout :: adminSidebar('fines')}"></aside>
+<div class="admin-shell">
+<header th:replace="~{fragments/layout :: adminTopbar}"></header>
+<main class="admin-content">
+    <h1>Fine management</h1>
+    <p class="subtitle">Fines are created automatically when a late book is returned
+        (<span th:text="${currency} + ${finePerDay}">5</span> per day late). Mark a fine as paid once the member has paid at the desk.</p>
+
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="stats">
+        <div class="stat danger"><div class="num" th:text="${currency} + ${unpaidFines}">0</div><div class="lbl">Unpaid</div></div>
+        <div class="stat"><div class="num" th:text="${currency} + ${collectedFines}">0</div><div class="lbl">Collected</div></div>
+    </div>
+
+    <h2>All fines</h2>
+    <input class="filter-control" type="search" placeholder="Search member or book…" aria-label="Search fines" data-table-filter="#admin-fines-table">
+    <div class="table-wrap">
+    <table id="admin-fines-table">
+        <thead>
+        <tr><th>Member</th><th>Book</th><th>Due</th><th>Returned</th><th>Fine</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="l : ${loans}">
+            <td>
+                <a th:href="@{/admin/members/{id}(id=${l.user.id})}" th:text="${l.user.fullName}">Member</a><br>
+                <span class="muted" th:text="${l.user.email}">email</span>
+            </td>
+            <td th:text="${l.book.title}">Title</td>
+            <td th:text="${#temporals.format(l.dueDate, 'dd MMM yyyy')}">date</td>
+            <td th:text="${#temporals.format(l.returnDate, 'dd MMM yyyy')}">date</td>
+            <td><strong th:text="${currency} + ${l.fineAmount}">0</strong></td>
+            <td>
+                <span th:if="${l.fineStatus.name() == 'UNPAID'}" class="badge badge-red">Unpaid</span>
+                <span th:if="${l.fineStatus.name() == 'PAID'}" class="badge badge-green"
+                      th:text="'Paid ' + ${#temporals.format(l.finePaidAt, 'dd MMM yyyy')}">Paid</span>
+            </td>
+            <td>
+                <form th:if="${l.fineStatus.name() == 'UNPAID'}" class="inline"
+                      th:action="@{/admin/fines/{id}/pay(id=${l.id})}" method="post">
+                    <button type="submit" class="btn btn-sm btn-success">Mark as paid</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(loans)}"><td colspan="7" class="empty">No fines have been recorded.</td></tr>
+        </tbody>
+    </table>
+    </div>
+</main>
+</div>
+</body>
+</html>

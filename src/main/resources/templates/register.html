@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Register')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="auth-layout">
+    <aside class="auth-aside">
+        <p class="eyebrow">A membership for curious minds</p>
+        <div>
+            <h1>Your next favourite is waiting.</h1>
+            <p>Join the Reading Room to borrow from the collection and keep your reading life in order.</p>
+        </div>
+        <p class="auth-aside-note">Thoughtful reading, made a little easier.</p>
+    </aside>
+    <section class="auth-main">
+        <div class="auth-card">
+            <p class="eyebrow">Start your membership</p>
+            <h2>Create an account</h2>
+            <p class="subtitle">Join the library as a member.</p>
+
+            <form th:action="@{/register}" th:object="${form}" method="post">
+                <div class="alert alert-error" role="alert" th:if="${#fields.hasGlobalErrors()}">
+                    <div th:each="e : ${#fields.globalErrors()}" th:text="${e}"></div>
+                </div>
+
+                <label for="fullName">Full name</label>
+                <input type="text" id="fullName" th:field="*{fullName}" autocomplete="name" aria-describedby="fullName-error">
+                <div class="field-error" id="fullName-error" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+
+                <label for="email">Email address</label>
+                <input type="email" id="email" th:field="*{email}" autocomplete="email" aria-describedby="email-error">
+                <div class="field-error" id="email-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+
+                <label for="password">Password</label>
+                <div class="password-wrap">
+                    <input type="password" id="password" th:field="*{password}" autocomplete="new-password" aria-describedby="password-error">
+                    <button class="password-toggle" type="button" data-password-toggle="password" aria-controls="password" aria-pressed="false">Show</button>
+                </div>
+                <div class="field-error" id="password-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+
+                <label for="confirmPassword">Confirm password</label>
+                <div class="password-wrap">
+                    <input type="password" id="confirmPassword" th:field="*{confirmPassword}" autocomplete="new-password" aria-describedby="confirmPassword-error">
+                    <button class="password-toggle" type="button" data-password-toggle="confirmPassword" aria-controls="confirmPassword" aria-pressed="false">Show</button>
+                </div>
+                <div class="field-error" id="confirmPassword-error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn">Create membership</button>
+                    <a class="btn btn-outline" th:href="@{/login}">I already have an account</a>
+                </div>
+            </form>
+        </div>
+    </section>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

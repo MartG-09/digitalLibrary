@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Members')}"></head>
+<body class="admin-body">
+<aside th:replace="~{fragments/layout :: adminSidebar('members')}"></aside>
+<div class="admin-shell">
+<header th:replace="~{fragments/layout :: adminTopbar}"></header>
+<main class="admin-content">
+    <h1>Registered members</h1>
+    <p class="subtitle">Disable an account to stop that member from logging in.</p>
+
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <input class="filter-control" type="search" placeholder="Search name or email…" aria-label="Search members" data-table-filter="#admin-members-table">
+
+    <div class="table-wrap">
+    <table id="admin-members-table">
+        <thead>
+        <tr><th>Name</th><th>Email</th><th>Joined</th><th>Account</th><th></th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="m : ${members}">
+            <td><a th:href="@{/admin/members/{id}(id=${m.id})}" th:text="${m.fullName}">Name</a></td>
+            <td th:text="${m.email}">email</td>
+            <td th:text="${#temporals.format(m.createdAt, 'dd MMM yyyy')}">date</td>
+            <td>
+                <span th:if="${m.enabled}" class="badge badge-green">Active</span>
+                <span th:unless="${m.enabled}" class="badge badge-red">Disabled</span>
+            </td>
+            <td>
+                <div class="actions-cell">
+                    <a class="btn btn-sm btn-outline" th:href="@{/admin/members/{id}(id=${m.id})}">View loans</a>
+                    <form class="inline" th:action="@{/admin/members/{id}/toggle(id=${m.id})}" method="post">
+                        <button type="submit" class="btn btn-sm"
+                                th:classappend="${m.enabled} ? 'btn-danger' : 'btn-success'"
+                                th:text="${m.enabled} ? 'Disable' : 'Enable'">Disable</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(members)}"><td colspan="5" class="empty">No members have registered yet.</td></tr>
+        </tbody>
+    </table>
+    </div>
+</main>
+</div>
+</body>
+</html>

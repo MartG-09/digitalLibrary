@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Member')}"></head>
+<body class="admin-body">
+<aside th:replace="~{fragments/layout :: adminSidebar('members')}"></aside>
+<div class="admin-shell">
+<header th:replace="~{fragments/layout :: adminTopbar}"></header>
+<main class="admin-content">
+    <p><a th:href="@{/admin/members}">&larr; All members</a></p>
+    <h1 th:text="${member.fullName}">Member</h1>
+    <p class="subtitle">
+        <span th:text="${member.email}">email</span> &middot;
+        joined <span th:text="${#temporals.format(member.createdAt, 'dd MMM yyyy')}">date</span> &middot;
+        <span th:if="${member.enabled}" class="badge badge-green">Active</span>
+        <span th:unless="${member.enabled}" class="badge badge-red">Disabled</span>
+    </p>
+
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <h2>Loan history</h2>
+    <div class="table-wrap">
+    <table>
+        <thead>
+        <tr><th>Book</th><th>Issued</th><th>Due</th><th>Returned</th><th>Fine</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="l : ${loans}" th:classappend="${l.isOverdue(today)} ? 'overdue'">
+            <td th:text="${l.book.title}">Title</td>
+            <td th:text="${#temporals.format(l.issueDate, 'dd MMM yyyy')}">date</td>
+            <td th:text="${#temporals.format(l.dueDate, 'dd MMM yyyy')}">date</td>
+            <td th:text="${l.returnDate != null} ? ${#temporals.format(l.returnDate, 'dd MMM yyyy')} : 'Still out'">-</td>
+            <td>
+                <span th:if="${l.fineStatus.name() == 'NONE'}" class="muted">-</span>
+                <span th:if="${l.fineStatus.name() == 'UNPAID'}" class="badge badge-red"
+                      th:text="${currency} + ${l.fineAmount} + ' unpaid'">unpaid</span>
+                <span th:if="${l.fineStatus.name() == 'PAID'}" class="badge badge-green"
+                      th:text="${currency} + ${l.fineAmount} + ' paid'">paid</span>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(loans)}"><td colspan="5" class="empty">This member has not borrowed anything yet.</td></tr>
+        </tbody>
+    </table>
+    </div>
+</main>
+</div>
+</body>
+</html>

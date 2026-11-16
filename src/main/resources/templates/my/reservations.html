@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('My Reservations')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container">
+    <div class="page-heading">
+        <div>
+            <p class="eyebrow">Your reading account</p>
+            <h1>Reservations</h1>
+            <p class="subtitle">When a copy is returned, open the catalogue and issue the book. Members who reserved earlier get the free copies first.</p>
+        </div>
+        <a class="btn btn-outline" th:href="@{/books}">Browse collection <span aria-hidden="true">↗</span></a>
+    </div>
+
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <div class="reservation-list">
+        <article class="reservation-card" th:each="r : ${reservations}">
+            <div class="reservation-mark" aria-hidden="true">R</div>
+            <div class="reservation-info">
+                <p class="eyebrow" th:text="${#temporals.format(r.reservedAt, 'dd MMM yyyy HH:mm')}">Reserved date</p>
+                <h2 th:text="${r.book.title}">Title</h2>
+                <p class="muted" th:text="${r.book.author}">Author</p>
+            </div>
+            <div class="reservation-state">
+                <span th:if="${r.status.name() == 'ACTIVE'}" class="badge badge-amber">Waiting</span>
+                <span th:if="${r.status.name() == 'FULFILLED'}" class="badge badge-green">Issued to you</span>
+                <span th:if="${r.status.name() == 'CANCELLED'}" class="badge badge-gray">Cancelled</span>
+            </div>
+            <div class="reservation-actions">
+                <th:block th:if="${r.status.name() == 'ACTIVE'}">
+                    <a th:if="${r.book.availableQuantity > 0}" class="btn btn-sm btn-success"
+                       th:href="@{/books(q=${r.book.title})}">A copy is free - issue it</a>
+                    <form class="inline" th:action="@{/my/reservations/{id}/cancel(id=${r.id})}" method="post">
+                        <button type="submit" class="btn btn-sm btn-outline">Cancel</button>
+                    </form>
+                </th:block>
+            </div>
+        </article>
+        <div class="empty-state" th:if="${#lists.isEmpty(reservations)}">No reservations yet. You can reserve a book from the catalogue when every copy is out.</div>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

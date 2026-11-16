@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Issued Books')}"></head>
+<body class="admin-body">
+<aside th:replace="~{fragments/layout :: adminSidebar('loans')}"></aside>
+<div class="admin-shell">
+<header th:replace="~{fragments/layout :: adminTopbar}"></header>
+<main class="admin-content">
+    <h1>Issued books</h1>
+    <p class="subtitle">Every book currently out, sorted by due date. Overdue rows are highlighted.</p>
+
+    <div th:replace="~{fragments/layout :: flash}"></div>
+
+    <input class="filter-control" type="search" placeholder="Search book or member…" aria-label="Search loans" data-table-filter="#admin-loans-table">
+
+    <div class="table-wrap">
+    <table id="admin-loans-table">
+        <thead>
+        <tr><th>Book</th><th>Member</th><th>Issued</th><th>Due date</th><th>Status</th><th>Fine so far</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="l : ${loans}" th:classappend="${l.isOverdue(today)} ? 'overdue'">
+            <td>
+                <strong th:text="${l.book.title}">Title</strong><br>
+                <span class="muted" th:text="${l.book.isbn}">ISBN</span>
+            </td>
+            <td>
+                <a th:href="@{/admin/members/{id}(id=${l.user.id})}" th:text="${l.user.fullName}">Member</a><br>
+                <span class="muted" th:text="${l.user.email}">email</span>
+            </td>
+            <td th:text="${#temporals.format(l.issueDate, 'dd MMM yyyy')}">date</td>
+            <td th:text="${#temporals.format(l.dueDate, 'dd MMM yyyy')}">date</td>
+            <td>
+                <span th:if="${l.isOverdue(today)}" class="badge badge-red">Overdue</span>
+                <span th:unless="${l.isOverdue(today)}" class="badge badge-green">On time</span>
+            </td>
+            <td th:text="${l.isOverdue(today)} ? ${currency} + ${@fineCalculator.calculate(l.dueDate, today)} : '-'">-</td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(loans)}"><td colspan="6" class="empty">No books are currently issued.</td></tr>
+        </tbody>
+    </table>
+    </div>
+</main>
+</div>
+</body>
+</html>

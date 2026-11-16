@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('My Loans')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<main class="container">
+    <div class="page-heading">
+        <div>
+            <p class="eyebrow">Your reading account</p>
+            <h1>My library</h1>
+            <p class="subtitle">Keep an eye on your current reads, due dates, and return history.</p>
+        </div>
+        <a class="btn btn-outline" th:href="@{/books}">Discover books <span aria-hidden="true">↗</span></a>
+    </div>
+
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <div class="alert alert-warn" th:if="${unpaidTotal.signum() > 0}">
+        You owe <strong th:text="${currency} + ${unpaidTotal}">0</strong> in fines.
+        Please pay at the library desk. You cannot borrow new books until it is cleared.
+    </div>
+
+    <div class="table-wrap">
+    <table>
+        <thead>
+        <tr><th>Book</th><th>Issued</th><th>Due</th><th>Returned</th><th>Status</th><th>Fine</th><th></th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="l : ${loans}" th:classappend="${l.isOverdue(today)} ? 'overdue'">
+            <td>
+                <strong th:text="${l.book.title}">Title</strong><br>
+                <span class="muted" th:text="${l.book.author}">Author</span>
+            </td>
+            <td th:text="${#temporals.format(l.issueDate, 'dd MMM yyyy')}">date</td>
+            <td th:text="${#temporals.format(l.dueDate, 'dd MMM yyyy')}">date</td>
+            <td th:text="${l.returnDate != null} ? ${#temporals.format(l.returnDate, 'dd MMM yyyy')} : '-'">-</td>
+            <td>
+                <span th:if="${l.status.name() == 'RETURNED'}" class="badge badge-gray">Returned</span>
+                <span th:if="${l.status.name() == 'ISSUED' and !l.isOverdue(today)}" class="badge badge-green">On loan</span>
+                <span th:if="${l.isOverdue(today)}" class="badge badge-red">Overdue</span>
+            </td>
+            <td>
+                <th:block th:if="${l.status.name() == 'ISSUED'}">
+                    <span th:if="${l.isOverdue(today)}" class="badge badge-red"
+                          th:text="${currency} + ${@fineCalculator.calculate(l.dueDate, today)} + ' so far'">0</span>
+                    <span th:unless="${l.isOverdue(today)}" class="muted">-</span>
+                </th:block>
+                <th:block th:if="${l.status.name() == 'RETURNED'}">
+                    <span th:if="${l.fineStatus.name() == 'NONE'}" class="muted">-</span>
+                    <span th:if="${l.fineStatus.name() == 'UNPAID'}" class="badge badge-red"
+                          th:text="${currency} + ${l.fineAmount} + ' unpaid'">unpaid</span>
+                    <span th:if="${l.fineStatus.name() == 'PAID'}" class="badge badge-green"
+                          th:text="${currency} + ${l.fineAmount} + ' paid'">paid</span>
+                </th:block>
+            </td>
+            <td>
+                <form th:if="${l.status.name() == 'ISSUED'}" class="inline"
+                      th:action="@{/my/loans/{id}/return(id=${l.id})}" method="post">
+                    <button type="submit" class="btn btn-sm">Return</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(loans)}">
+            <td colspan="7" class="empty">You have not borrowed anything yet. <a th:href="@{/books}">Browse the catalogue</a>.</td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
